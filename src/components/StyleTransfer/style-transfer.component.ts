@@ -52,7 +52,8 @@ export default class StyleTransferComponent extends Vue {
       this.styleName = styleName;
     });
 
-    let prefix = process.env.NODE_ENV === '"production"' ? '/fast-style-transfer-front-end/' : '/';
+    let prefix = process.env.NODE_ENV === 'development' ? '/' : '/fast-style-transfer-front-end/';
+    console.log(process.env);
     const response = await fetch(`${prefix}static/images/${styleName}.jpg`);
     const blob = await response.blob();
     Vue.nextTick(() => {
