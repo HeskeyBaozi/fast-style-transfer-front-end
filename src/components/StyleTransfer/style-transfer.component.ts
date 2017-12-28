@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { TransformNetwork } from "../../transform-network/network";
-import { Array3D, render_ndarray_gpu_util, gpgpu_util, GPGPUContext, ENV } from "deeplearn";
+import { Array3D, ENV } from "deeplearn";
 
 const math = ENV.math;
 declare const process: any;
@@ -53,7 +53,6 @@ export default class StyleTransferComponent extends Vue {
     });
 
     let prefix = process.env.NODE_ENV === 'development' ? '/' : '/fast-style-transfer-front-end/';
-    console.log(process.env);
     const response = await fetch(`${prefix}static/images/${styleName}.jpg`);
     const blob = await response.blob();
     Vue.nextTick(() => {

@@ -1,7 +1,8 @@
 import { Array1D, Array3D, Array4D, CheckpointLoader, NDArray, ENV, Scalar, Model } from 'deeplearn';
 
-
-const Check_Points_Path = '/static/checkpoints';
+declare const process: any;
+let prefix = process.env.NODE_ENV === 'development' ? '/' : '/fast-style-transfer-front-end/';
+const Check_Points_Path = prefix + 'static/checkpoints';
 
 
 interface VariableRecording {
