@@ -25,7 +25,8 @@ declare const process: any;
       type: Object,
       default: () => new TransformNetwork()
     }
-  }
+  },
+  watch: {}
 })
 export default class StyleTransferComponent extends Vue {
 
@@ -37,6 +38,9 @@ export default class StyleTransferComponent extends Vue {
   log = '';
   progress = 0;
   useOrigin = false;
+  toast = false;
+  isDownloading = false;
+
 
   // $props
   styleNames: string[];
@@ -53,6 +57,17 @@ export default class StyleTransferComponent extends Vue {
     Vue.nextTick(() => {
       this.contentUrl = URL.createObjectURL(files[0]);
     });
+  }
+
+  async downloadModel() {
+    this.isDownloading = true;
+    await this.transformNetwork.setStyle(this.styleName);
+    this.isDownloading = false;
+    this.toast = true;
+    const timer = window.setTimeout(() => {
+      this.toast = false;
+      window.clearTimeout(timer);
+    }, 3000);
   }
 
   async selectStyle(styleName: string) {

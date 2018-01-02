@@ -12,7 +12,10 @@
 
       <section class="list">
         <h1>Style</h1>
+        <mu-toast v-show="toast" :message="`${styleName} downloaded.`"/>
         <img v-show="styleUrl" id="transfer-style" class="box" :src="styleUrl" alt="style">
+        <mu-raised-button @click="downloadModel" primary label="Download Vars"
+                          :disabled="styleName && isDownloading"></mu-raised-button>
         <mu-select-field :value="styleName" @input="selectStyle" :labelFocusClass="['label-foucs']"
                          label="Choose a style">
           <mu-menu-item v-for="name of styleNames" :key="name" :value="name" :title="name"/>
