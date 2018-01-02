@@ -4,6 +4,8 @@ Based on `Deeplearn.js` official demo.
 
 ## Preview
 
+[Demo | 演示地址](https://heskeybaozi.github.io/fast-style-transfer-front-end/)
+
 ![preview](./docs/test.gif)
 
 ## Build Setup
