@@ -3,7 +3,7 @@
     <div class="banner">
       <p class="leading">Style Transfer Front End</p>
       <p class="leading-2">在前端的快速风格迁移</p>
-      <p>第五小组 何志宇 高阳 郭柱明</p>
+      <p>第<strong>五</strong>小组 何志宇 高阳 郭柱明 范永业 傅成钢 高欢宇</p>
     </div>
     <style-transfer/>
   </div>

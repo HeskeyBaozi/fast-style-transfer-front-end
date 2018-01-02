@@ -24,16 +24,12 @@
     <mu-raised-button secondary :disabled="!startable || startBtnLoading"
                       @click="startTransfer">Start!
     </mu-raised-button>
-
     <div id="log">
       <p>{{ log }}</p>
       <mu-circular-progress v-show="progress !== 0 && progress !== 100" mode="determinate" :size="100" :strokeWidth="5"
                             :value="progress"/>
     </div>
-
     <mu-divider/>
-
-
     <div id="output">
       <keep-alive>
         <canvas class="box" :key="'my-output'" ref="output" id="output-canvas" width="1" height="1"></canvas>
@@ -94,6 +90,10 @@
     }
 
     #log {
+    }
+
+    #output {
+      min-height: 30vh;
     }
   }
 </style>
