@@ -4,7 +4,7 @@
     <div class="row">
       <section class="list">
         <h1>Content</h1>
-        <img v-show="contentUrl" id="transfer-content" class="box" :src="contentUrl" alt="content">
+        <img v-show="contentUrl" ref="content" id="transfer-content" class="box" :src="contentUrl" alt="content">
         <mu-raised-button primary label="Choose">
           <input @change="uploadContent" class="file-button" type="file" accept="image/*"/>
         </mu-raised-button>
@@ -21,6 +21,9 @@
     </div>
 
     <mu-divider/>
+    <div>
+      <mu-switch label="使用原图" v-model="useOrigin"/>
+    </div>
     <mu-raised-button secondary :disabled="!startable || startBtnLoading"
                       @click="startTransfer">Start!
     </mu-raised-button>
@@ -72,6 +75,7 @@
       }
 
       img {
+        min-width: 45%;
         max-width: 100%;
       }
 

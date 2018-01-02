@@ -36,6 +36,7 @@ export default class StyleTransferComponent extends Vue {
   startBtnLoading = false;
   log = '';
   progress = 0;
+  useOrigin = false;
 
   // $props
   styleNames: string[];
@@ -79,7 +80,7 @@ export default class StyleTransferComponent extends Vue {
 
     this.log = '加载模型中...';
     const interval = window.setInterval(() => {
-      this.progress = this.progress + (50 - this.progress) / 3;
+      this.progress = this.progress + (50 - this.progress) / 4;
     }, 500);
     await this.transformNetwork.setStyle(this.styleName);
     this.progress = 50;
@@ -87,21 +88,26 @@ export default class StyleTransferComponent extends Vue {
     this.log = '计算合成图中...';
 
 
-    await math.scope(async (keep, track) => {
-      const input = await getImage(this.contentUrl);
-      const preprocessed = track(Array3D.fromPixels(input) as Array3D);
-      const inferenceResult: Array3D = this.transformNetwork.predict(preprocessed);
-      this.progress = 90;
-      this.log = '渲染中...';
+    Vue.nextTick(async () => {
+      await math.scope(async (keep, track) => {
+        const input = await getImage(this.contentUrl);
+        if (!this.useOrigin) {
+          const content = this.$refs.content as HTMLImageElement;
+          input.width = content.width;
+          input.height = content.height;
+        }
+        const preprocessed = track(Array3D.fromPixels(input) as Array3D);
+        const inferenceResult: Array3D = this.transformNetwork.predict(preprocessed);
+        this.progress = 90;
+        this.log = '渲染中...';
 
-      const canvas = this.$refs.output as HTMLCanvasElement;
-      canvas.width = input.width;//inferenceResult.shape[0];
-      canvas.height = input.height;//inferenceResult.shape[1];
+        const canvas = this.$refs.output as HTMLCanvasElement;
+        canvas.width = input.width;//inferenceResult.shape[0];
+        canvas.height = input.height;//inferenceResult.shape[1];
 
-      await renderToCanvas(inferenceResult, canvas as HTMLCanvasElement);
-    });
+        await renderToCanvas(inferenceResult, canvas as HTMLCanvasElement);
+      });
 
-    Vue.nextTick(() => {
       this.log = '风格迁移完成!';
       this.progress = 100;
       this.startBtnLoading = false;
