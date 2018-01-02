@@ -13,9 +13,17 @@ interface Variables {
   [varName: string]: NDArray
 }
 
+export interface Step {
+  [name: string]: {
+    layer: Array3D,
+    data: any
+  }
+}
+
 export class TransformNetwork implements Model {
   varsRecording: VariableRecording = {};
   currentStyle = '';
+  step: Step = {};
   math = ENV.math;
 
   get variables(): Variables {
@@ -42,7 +50,9 @@ export class TransformNetwork implements Model {
   }
 
   predict(preprocessedInput: Array3D): Array3D {
+    const totalStep: any[] = [];
     const img = this.math.scope((keep, track) => {
+      this.step = {};
       const conv1 = this.convLayer(preprocessedInput, 1, true, 0);
       const conv2 = this.convLayer(conv1, 2, true, 3);
       const conv3 = this.convLayer(conv2, 2, true, 6);
@@ -58,7 +68,27 @@ export class TransformNetwork implements Model {
       const scaled = this.math.scalarTimesArray(this.timesScalar, outTanh);
       const shifted = this.math.scalarPlusArray(this.plusScalar, scaled);
       const clamped = this.math.clip(shifted, 0, 255);
-      const normalized = this.math.divide(clamped, Scalar.new(255.)) as Array3D;
+      const normalized = this.math.divide(clamped, Scalar.new(255)) as Array3D;
+
+
+      this.step = {
+        conv1: { data: conv1.dataSync(), layer: conv1 },
+        conv2: { data: conv2.dataSync(), layer: conv2 },
+        conv3: { data: conv3.dataSync(), layer: conv3 },
+        resid1: { data: resid1.dataSync(), layer: resid1 },
+        resid2: { data: resid2.dataSync(), layer: resid2 },
+        resid3: { data: resid3.dataSync(), layer: resid3 },
+        resid4: { data: resid4.dataSync(), layer: resid4 },
+        resid5: { data: resid5.dataSync(), layer: resid5 },
+        convT1: { data: convT1.dataSync(), layer: convT1 },
+        convT2: { data: convT2.dataSync(), layer: convT2 },
+        convT3: { data: convT3.dataSync(), layer: convT3 },
+        outTanh: { data: outTanh.dataSync(), layer: outTanh },
+        scaled: { data: scaled.dataSync(), layer: scaled },
+        normalized: { data: normalized.dataSync(), layer: normalized }
+      };
+
+      console.log(this.step);
 
       return normalized;
     });

@@ -41,6 +41,11 @@
         <canvas class="box" :key="'my-output'" ref="output" id="output-canvas" width="1" height="1"></canvas>
       </keep-alive>
     </div>
+    <mu-divider/>
+    <div id="step">
+      <layer-preview class="box" v-for="(layer, name) of transformNetwork.step" :key="name" :name="name"
+                     :layer="layer"></layer-preview>
+    </div>
   </div>
 </template>
 
@@ -78,8 +83,7 @@
       }
 
       img {
-        min-width: 45%;
-        max-width: 100%;
+        max-width: 550px;
       }
 
       .file-button {

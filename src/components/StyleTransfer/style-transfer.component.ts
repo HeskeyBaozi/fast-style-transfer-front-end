@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { TransformNetwork } from "../../transform-network/network";
+import { Step, TransformNetwork } from "../../transform-network/network";
 import { Array3D, ENV } from "deeplearn";
+import LayerPreview from '../layer-preview/layer-preview.vue';
 
 const math = ENV.math;
 declare const process: any;
@@ -26,7 +27,9 @@ declare const process: any;
       default: () => new TransformNetwork()
     }
   },
-  watch: {}
+  components: {
+    LayerPreview
+  }
 })
 export default class StyleTransferComponent extends Vue {
 
@@ -86,6 +89,7 @@ export default class StyleTransferComponent extends Vue {
 
   async startTransfer() {
     this.log = '开始风格迁移...';
+    this.transformNetwork.step = {};
     this.progress = 1;
     this.startBtnLoading = true;
     if (!(this.contentUrl && this.styleUrl)) {
@@ -117,8 +121,6 @@ export default class StyleTransferComponent extends Vue {
         this.log = '渲染中...';
 
         const canvas = this.$refs.output as HTMLCanvasElement;
-        canvas.width = input.width;//inferenceResult.shape[0];
-        canvas.height = input.height;//inferenceResult.shape[1];
 
         await renderToCanvas(inferenceResult, canvas as HTMLCanvasElement);
       });
@@ -132,6 +134,8 @@ export default class StyleTransferComponent extends Vue {
 
 async function renderToCanvas(a: Array3D, canvas: HTMLCanvasElement) {
   const [height, width,] = a.shape;
+  canvas.width = width;
+  canvas.height = height;
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   const imageData = new ImageData(width, height);
   const data = await a.data();
