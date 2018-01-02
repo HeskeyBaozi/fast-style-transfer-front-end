@@ -2,6 +2,10 @@
 
 Based on `Deeplearn.js` official demo.
 
+## Preview
+
+![preview](./docs/test.gif)
+
 ## Build Setup
 
 ``` bash
