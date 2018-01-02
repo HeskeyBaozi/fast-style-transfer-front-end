@@ -17,7 +17,8 @@ declare const process: any;
         'la_muse',
         'rain_princess',
         'wave',
-        'wreck'
+        'wreck',
+        'btfly'
       ]
     },
     transformNetwork: {
@@ -33,10 +34,17 @@ export default class StyleTransferComponent extends Vue {
   styleUrl = '';
   styleName = '';
   startBtnLoading = false;
+  log = '';
+  progress = 0;
 
   // $props
   styleNames: string[];
   transformNetwork: TransformNetwork;
+
+  // $computed
+  get startable(): boolean {
+    return !!(this.contentUrl && this.styleUrl);
+  }
 
 
   uploadContent({ target }: Event) {
@@ -61,30 +69,41 @@ export default class StyleTransferComponent extends Vue {
   }
 
   async startTransfer() {
+    this.log = '开始风格迁移...';
+    this.progress = 1;
     this.startBtnLoading = true;
     if (!(this.contentUrl && this.styleUrl)) {
-      this.$message.error('Please set Content or Style!');
       this.startBtnLoading = false;
       return;
     }
 
-    Vue.nextTick(async () => {
-      await this.transformNetwork.setStyle(this.styleName);
+    this.log = '加载模型中...';
+    const interval = window.setInterval(() => {
+      this.progress = this.progress + (50 - this.progress) / 3;
+    }, 500);
+    await this.transformNetwork.setStyle(this.styleName);
+    this.progress = 50;
+    window.clearInterval(interval);
+    this.log = '计算合成图中...';
 
 
-      await math.scope(async (keep, track) => {
-        const input = document.getElementById('transfer-content') as HTMLImageElement;
-        const preprocessed = track(Array3D.fromPixels(input) as Array3D);
-        const inferenceResult: Array3D = this.transformNetwork.predict(preprocessed);
+    await math.scope(async (keep, track) => {
+      const input = await getImage(this.contentUrl);
+      const preprocessed = track(Array3D.fromPixels(input) as Array3D);
+      const inferenceResult: Array3D = this.transformNetwork.predict(preprocessed);
+      this.progress = 90;
+      this.log = '渲染中...';
 
-        const canvas = this.$refs.output as HTMLCanvasElement;
-        canvas.width = input.width;//inferenceResult.shape[0];
-        canvas.height = input.height;//inferenceResult.shape[1];
+      const canvas = this.$refs.output as HTMLCanvasElement;
+      canvas.width = input.width;//inferenceResult.shape[0];
+      canvas.height = input.height;//inferenceResult.shape[1];
 
-        await renderToCanvas(inferenceResult, canvas as HTMLCanvasElement);
-      });
+      await renderToCanvas(inferenceResult, canvas as HTMLCanvasElement);
+    });
 
-      this.$message.info('Processing finished.');
+    Vue.nextTick(() => {
+      this.log = '风格迁移完成!';
+      this.progress = 100;
       this.startBtnLoading = false;
     });
   }
@@ -104,4 +123,14 @@ async function renderToCanvas(a: Array3D, canvas: HTMLCanvasElement) {
     imageData.data[j + 3] = 255;
   }
   ctx.putImageData(imageData, 0, 0);
+}
+
+async function getImage(url: string): Promise<HTMLImageElement> {
+  return new Promise<HTMLImageElement>(resolve => {
+    const input = new Image();
+    input.src = url;
+    input.onload = () => {
+      resolve(input);
+    };
+  });
 }

@@ -1,9 +1,13 @@
 import Vue from 'vue';
 import App from './app.vue';
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
+import './assets/fonts/proximanova.css';
+import 'normalize.css/normalize.css';
+import 'muse-ui/dist/muse-ui.css';
+import 'muse-ui/dist/theme-light.css'
+import MuseUI from 'muse-ui';
 
-Vue.use(ElementUI, { size: 'small' });
+Vue.use(MuseUI);
+
 
 Vue.config.productionTip = false;
 
